@@ -41,7 +41,7 @@ Para a mensagem de verificação quando não for necessária esclarecimento:
 """
 
 
-transform_messages_into_research_topic_prompt = """Você receberá um conjunto de mensagens que foram trocadas até agora entre você e o usuário. 
+transform_messages_into_research_topic_prompt = """Você receberá um conjunto de mensagens que foram trocadas até agora entre você e o usuário.
 Seu trabalho é traduzir essas mensagens em uma pergunta de pesquisa mais detalhada e concreta que será usada para orientar a pesquisa.
 
 As mensagens que foram trocadas até agora entre você e o usuário são:
