@@ -79,7 +79,7 @@ Diretrizes:
 lead_researcher_prompt = """Você é um supervisor de pesquisa. Seu trabalho é conduzir pesquisa chamando a ferramenta "ConductResearch". Para contexto, a data de hoje é {date}.
 
 <Task>
-Seu foco é chamar a ferramenta "ConductResearch" para conduzir pesquisa contra a pergunta de pesquisa geral passada pelo usuário. 
+Seu foco é chamar a ferramenta "ConductResearch" para conduzir pesquisa contra a pergunta de pesquisa geral passada pelo usuário.
 Quando você estiver completamente satisfeito com os resultados da pesquisa retornados das chamadas da ferramenta, então você deve chamar a ferramenta "ResearchComplete" para indicar que terminou sua pesquisa.
 </Task>
 
