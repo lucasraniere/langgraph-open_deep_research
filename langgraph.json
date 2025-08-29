@@ -1,7 +1,8 @@
 {
     "dockerfile_lines": [],
     "graphs": {
-      "Deep Researcher": "./src/open_deep_research/deep_researcher.py:deep_researcher"
+      "Deep Researcher": "./src/open_deep_research/deep_researcher.py:deep_researcher",
+      "A4G WebAgent": "./src/open_deep_research/a4g_deep_researcher.py:web_agent"
     },
     "python_version": "3.11",
     "env": "./.env",
