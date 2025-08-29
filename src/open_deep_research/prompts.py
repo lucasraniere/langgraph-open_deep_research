@@ -79,7 +79,7 @@ Guidelines:
 lead_researcher_prompt = """You are a research supervisor. Your job is to conduct research by calling the "ConductResearch" tool. For context, today's date is {date}.
 
 <Task>
-Your focus is to call the "ConductResearch" tool to conduct research against the overall research question passed in by the user. 
+Your focus is to call the "ConductResearch" tool to conduct research against the overall research question passed in by the user.
 When you are completely satisfied with the research findings returned from the tool calls, then you should call the "ResearchComplete" tool to indicate that you are done with your research.
 </Task>
 

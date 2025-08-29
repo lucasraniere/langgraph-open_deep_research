@@ -1,50 +1,9 @@
 """Prompts do sistema e modelos de prompts para o agente de Pesquisa Profunda."""
 
-clarify_with_user_instructions="""
-Estas são as mensagens que foram trocadas até agora do usuário solicitando o relatório:
-<Messages>
-{messages}
-</Messages>
+transform_messages_into_research_topic_prompt = """Você receberá uma algegação para ser checada.
+Seu trabalho é traduzir essa alegação em uma pergunta de pesquisa mais detalhada e concreta que será usada para orientar a pesquisa.
 
-A data de hoje é {date}.
-
-Avalie se você precisa fazer uma pergunta esclarecedora, ou se o usuário já forneceu informações suficientes para você começar a pesquisa.
-IMPORTANTE: Se você pode ver no histórico de mensagens que já fez uma pergunta esclarecedora, quase sempre não precisa fazer outra. Só faça outra pergunta se for ABSOLUTAMENTE NECESSÁRIO.
-
-Se houver acrônimos, abreviações ou termos desconhecidos, peça ao usuário para esclarecer.
-Se você precisar fazer uma pergunta, siga estas diretrizes:
-- Seja conciso enquanto coleta todas as informações necessárias
-- Certifique-se de coletar todas as informações necessárias para executar a tarefa de pesquisa de forma concisa e bem estruturada.
-- Use marcadores ou listas numeradas se apropriado para clareza. Certifique-se de que isso usa formatação markdown e será renderizado corretamente se a string de saída for passada para um renderizador markdown.
-- Não peça informações desnecessárias, ou informações que o usuário já forneceu. Se você pode ver que o usuário já forneceu a informação, não peça novamente.
-
-Responda em formato JSON válido com estas chaves exatas:
-"need_clarification": boolean,
-"question": "<pergunta para fazer ao usuário para esclarecer o escopo do relatório>",
-"verification": "<mensagem de verificação de que começaremos a pesquisa>"
-
-Se você precisar fazer uma pergunta esclarecedora, retorne:
-"need_clarification": true,
-"question": "<sua pergunta esclarecedora>",
-"verification": ""
-
-Se você não precisar fazer uma pergunta esclarecedora, retorne:
-"need_clarification": false,
-"question": "",
-"verification": "<mensagem de reconhecimento de que você agora começará a pesquisa com base nas informações fornecidas>"
-
-Para a mensagem de verificação quando não for necessária esclarecimento:
-- Reconheça que você tem informações suficientes para prosseguir
-- Resuma brevemente os aspectos-chave do que você entende de sua solicitação
-- Confirme que você agora começará o processo de pesquisa
-- Mantenha a mensagem concisa e profissional
-"""
-
-
-transform_messages_into_research_topic_prompt = """Você receberá um conjunto de mensagens que foram trocadas até agora entre você e o usuário.
-Seu trabalho é traduzir essas mensagens em uma pergunta de pesquisa mais detalhada e concreta que será usada para orientar a pesquisa.
-
-As mensagens que foram trocadas até agora entre você e o usuário são:
+A alegação é:
 <Messages>
 {messages}
 </Messages>
@@ -79,7 +38,7 @@ Diretrizes:
 lead_researcher_prompt = """Você é um supervisor de pesquisa. Seu trabalho é conduzir pesquisa chamando a ferramenta "ConductResearch". Para contexto, a data de hoje é {date}.
 
 <Task>
-Seu foco é chamar a ferramenta "ConductResearch" para conduzir pesquisa contra a pergunta de pesquisa geral passada pelo usuário.
+Seu foco é chamar a ferramenta "ConductResearch" para conduzir pesquisa em relação à pergunta de pesquisa geral passada pelo usuário.
 Quando você estiver completamente satisfeito com os resultados da pesquisa retornados das chamadas da ferramenta, então você deve chamar a ferramenta "ResearchComplete" para indicar que terminou sua pesquisa.
 </Task>
 

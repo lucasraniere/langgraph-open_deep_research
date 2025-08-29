@@ -20,7 +20,6 @@ from open_deep_research.configuration import (
     Configuration,
 )
 from open_deep_research.prompts_pt import (
-    clarify_with_user_instructions,
     compress_research_simple_human_message,
     compress_research_system_prompt,
     final_report_generation_prompt,
@@ -31,7 +30,6 @@ from open_deep_research.prompts_pt import (
 from open_deep_research.state import (
     AgentInputState,
     AgentState,
-    ClarifyWithUser,
     ConductResearch,
     ResearchComplete,
     ResearcherOutputState,
@@ -56,64 +54,6 @@ from open_deep_research.utils import (
 configurable_model = init_chat_model(
     configurable_fields=("model", "max_tokens", "api_key"),
 )
-
-async def clarify_with_user(state: AgentState, config: RunnableConfig) -> Command[Literal["write_research_brief", "__end__"]]:
-    """Analyze user messages and ask clarifying questions if the research scope is unclear.
-    
-    This function determines whether the user's request needs clarification before proceeding
-    with research. If clarification is disabled or not needed, it proceeds directly to research.
-    
-    Args:
-        state: Current agent state containing user messages
-        config: Runtime configuration with model settings and preferences
-        
-    Returns:
-        Command to either end with a clarifying question or proceed to research brief
-    """
-    # Step 1: Check if clarification is enabled in configuration
-    configurable = Configuration.from_runnable_config(config)
-    if not configurable.allow_clarification:
-        # Skip clarification step and proceed directly to research
-        return Command(goto="write_research_brief")
-    
-    # Step 2: Prepare the model for structured clarification analysis
-    messages = state["messages"]
-    model_config = {
-        "model": configurable.research_model,
-        "max_tokens": configurable.research_model_max_tokens,
-        "api_key": get_api_key_for_model(configurable.research_model, config),
-        "tags": ["langsmith:nostream"]
-    }
-    
-    # Configure model with structured output and retry logic
-    clarification_model = (
-        configurable_model
-        .with_structured_output(ClarifyWithUser)
-        .with_retry(stop_after_attempt=configurable.max_structured_output_retries)
-        .with_config(model_config)
-    )
-    
-    # Step 3: Analyze whether clarification is needed
-    prompt_content = clarify_with_user_instructions.format(
-        messages=get_buffer_string(messages), 
-        date=get_today_str()
-    )
-    response = await clarification_model.ainvoke([HumanMessage(content=prompt_content)])
-    
-    # Step 4: Route based on clarification analysis
-    if response.need_clarification:
-        # End with clarifying question for user
-        return Command(
-            goto=END, 
-            update={"messages": [AIMessage(content=response.question)]}
-        )
-    else:
-        # Proceed to research with verification message
-        return Command(
-            goto="write_research_brief", 
-            update={"messages": [AIMessage(content=response.verification)]}
-        )
-
 
 async def write_research_brief(state: AgentState, config: RunnableConfig) -> Command[Literal["research_supervisor"]]:
     """Transform user messages into a structured research brief and initialize supervisor.
@@ -247,7 +187,7 @@ async def supervisor_tools(state: SupervisorState, config: RunnableConfig) -> Co
     exceeded_allowed_iterations = research_iterations > configurable.max_researcher_iterations
     no_tool_calls = not most_recent_message.tool_calls
     research_complete_tool_call = any(
-        tool_call["name"] == "ResearchComplete" 
+        tool_call["name"] == "ResearchComplete"
         for tool_call in most_recent_message.tool_calls
     )
     
@@ -398,7 +338,7 @@ async def researcher(state: ResearcherState, config: RunnableConfig) -> Command[
     
     # Prepare system prompt with MCP context if available
     researcher_prompt = research_system_prompt.format(
-        mcp_prompt=configurable.mcp_prompt or "", 
+        mcp_prompt=configurable.mcp_prompt or "",
         date=get_today_str()
     )
     
@@ -552,7 +492,7 @@ async def compress_research(state: ResearcherState, config: RunnableConfig):
             
             # Extract raw notes from all tool and AI messages
             raw_notes_content = "\n".join([
-                str(message.content) 
+                str(message.content)
                 for message in filter_messages(researcher_messages, include_types=["tool", "ai"])
             ])
             
@@ -699,19 +639,17 @@ async def final_report_generation(state: AgentState, config: RunnableConfig):
 # Main Deep Researcher Graph Construction
 # Creates the complete deep research workflow from user input to final report
 deep_researcher_builder = StateGraph(
-    AgentState, 
-    input=AgentInputState, 
+    AgentState,
+    input=AgentInputState,
     config_schema=Configuration
 )
 
 # Add main workflow nodes for the complete research process
-deep_researcher_builder.add_node("clarify_with_user", clarify_with_user)           # User clarification phase
 deep_researcher_builder.add_node("write_research_brief", write_research_brief)     # Research planning phase
 deep_researcher_builder.add_node("research_supervisor", supervisor_subgraph)       # Research execution phase
 deep_researcher_builder.add_node("final_report_generation", final_report_generation)  # Report generation phase
 
 # Define main workflow edges for sequential execution
-# deep_researcher_builder.add_edge(START, "clarify_with_user")                       # Entry point
 deep_researcher_builder.add_edge(START, "write_research_brief")
 deep_researcher_builder.add_edge("research_supervisor", "final_report_generation") # Research to report
 # deep_researcher_builder.add_edge("research_supervisor", END) # Research to report
