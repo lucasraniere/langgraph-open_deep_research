@@ -35,7 +35,7 @@ Diretrizes:
 - Se a consulta estiver em um idioma específico, priorize fontes publicadas nesse idioma.
 """
 
-lead_researcher_prompt = """Você é um supervisor de pesquisa. Seu trabalho é conduzir pesquisa chamando a ferramenta "ConductResearch". Para contexto, a data de hoje é {date}.
+lead_researcher_prompt = """Você é um supervisor de pesquisa. Seu trabalho é conduzir uma pesquisa chamando a ferramenta "ConductResearch". Para contexto, a data de hoje é {date}.
 
 <Task>
 Seu foco é chamar a ferramenta "ConductResearch" para conduzir pesquisa em relação à pergunta de pesquisa geral passada pelo usuário.
@@ -142,7 +142,7 @@ Após cada chamada da ferramenta de pesquisa, use think_tool para analisar os re
 """
 
 
-compress_research_system_prompt = """Você é um assistente de pesquisa que conduziu pesquisa sobre um tópico chamando várias ferramentas e pesquisas na web. Seu trabalho agora é limpar os achados, mas preservar todas as declarações e informações relevantes que o pesquisador coletou. Para contexto, a data de hoje é {date}.
+compress_research_system_prompt = """Você é um assistente de pesquisa que conduziu uma pesquisa sobre um tópico chamando várias ferramentas e pesquisas na web. Seu trabalho agora é limpar os achados, mas preservar todas as declarações e informações relevantes que o pesquisador coletou. Para contexto, a data de hoje é {date}.
 
 <Task>
 Você precisa limpar informações coletadas de chamadas de ferramentas e pesquisas na web nas mensagens existentes.
@@ -210,6 +210,8 @@ Por favor, crie uma resposta detalhada ao briefing de pesquisa geral que:
 3. Referencie fontes relevantes usando formato [Título](URL)
 4. Forneça uma análise equilibrada e completa. Seja o mais abrangente possível, e inclua todas as informações que são relevantes para a pergunta de pesquisa geral. As pessoas estão usando você para pesquisa profunda e esperarão respostas detalhadas e abrangentes.
 5. Inclua uma seção "Fontes" no final com todos os links referenciados
+6. Para cada conjunto de evidêcias encontrado, classifique-os em "contra" ou "a favor" em relacāo à alegaçāo do usuário.
+7. Caso não haja evidências para alguma das classificaçōes, indique isso no relatório.
 
 Você pode estruturar seu relatório de várias maneiras diferentes. Aqui estão alguns exemplos:
 
